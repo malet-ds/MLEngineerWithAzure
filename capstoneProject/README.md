@@ -28,19 +28,39 @@ As mentioned before, the project performs regressions on all the features to pre
 
 ### Access
 
-The dataset is accessed via the function ````sklearn.datasets.fetch_california_housing(return_X_y = True)````. This function returns a tuple with features as first element and target as the second. Starting from scikit-learn version 0.23, there is an optional parameter ```as_frame = True``` that will return a pandas dataframe, however, this was not available in azureml notebooks environment at the time of the project.
+The dataset is accessed via the function ````sklearn.datasets.fetch_california_housing(return_X_y = True)````. This function returns a tuple with features as first element and target as the second. Starting from scikit-learn version 0.23, there is an optional parameter ```as_frame = True``` that returns two pandas dataframes; however, this was not available in azureml notebooks environment at the time of the project.
 
 Once downloaded the data has to be converted to pandas and preprocess. The dataset is clean, so the only preprocessing needed is splitting the sets in train and test. For the hyperdrive experiment no further work is necessary. For the AutoML experiment, the target variable needs to be added again to the features, and the dataset needs to be converted to a TabularDataset and register in the workspace. To do that, there is an experimental method in the ```TabularDatasetFactory``` class that, at the time of the project, was working: ```TabularDatasetFactory.register_pandas_dataframe(data, datastore,'data')```. Should this method fail in the future, the notebook contains alternative code to register the dataset.
 
+![loadRegisterDataset](./img/loadRegisterDataset.png)
+
 ## Automated ML
 
-*TODO*: Give an overview of the `automl` settings and configuration you used for this experiment
+### Setup
+
+At the time of the project there was a difference in SDK versions between the notebook environment and the AutoML. The model was able to train, but it could not predict new values for the target variable on the test dataset. To solve that issue, the following needed to be run at the beginning:
+
+```!pip install --upgrade --upgrade-strategy eager azureml-sdk[automl,widgets,notebooks]```
+
+### Settings and Configuration
+
+- Settings
+
+In the AutoML settings for the project, we established a maximum time of one hour (to be able to finish the entire project within the four hours of the lab), we set the maximum number of concurrent iterations to five (because it has to be set, at most, at the value of the maximum nodes of the compute cluster created), and we set the primary metric to be $r^2$, to match the primary metric logged by the hyperdrive experiment.
+
+- Configuration
+
+In the configuration part we set parameters for AutoML training. In this project we included a reference to the compute target created for the training, we named the task to be performed (regression) as well as the dataset and the target (label) variable, we enable early stopping to save resources, we requested for AutoML to do automatic featurization, we established a validation size of 20% instead of number of cross-validations, we enabled compatiblility with ONNX, and we requested to run explainability on the best model. We left out the metrics goal, as it defaults to maximize, we did not include deep learning models, and we did not black-listed any algorithms (except for deep learning).
 
 ### Results
 
 *TODO*: What are the results you got with your automated ML model? What were the parameters of the model? How could you have improved it?
 
 *TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
+
+add model explanation
+
+![model](./img/modelSteps.png)
 
 ## Hyperparameter Tuning
 
@@ -56,6 +76,12 @@ Once downloaded the data has to be converted to pandas and preprocess. The datas
 
 *TODO*: Give an overview of the deployed model and instructions on how to query the endpoint with a sample input.
 
+add swagger
+
+add app-insights
+
+show service.log()
+
 ## Screen Recording
 
 *TODO* Provide a link to a screen recording of the project in action. Remember that the screencast should demonstrate:
@@ -63,7 +89,3 @@ Once downloaded the data has to be converted to pandas and preprocess. The datas
 - A working model
 - Demo of the deployed  model
 - Demo of a sample request sent to the endpoint and its response
-
-## Standout Suggestions
-
-*TODO (Optional):* This is where you can provide information about any standout suggestions that you have attempted.
