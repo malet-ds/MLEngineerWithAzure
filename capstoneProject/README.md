@@ -50,7 +50,7 @@ In the AutoML settings for the project, we established a maximum time of one hou
 
 - Configuration
 
-In the configuration part we set parameters for AutoML training. In this project we included a reference to the compute target created for the training, we named the task to be performed (regression) as well as the dataset and the target (label) variable, we enable early stopping to save resources, we requested for AutoML to do automatic featurization, we established a validation size of 20% instead of number of cross-validations, we enabled compatiblility with ONNX, and we requested to run explainability on the best model. We left out the metrics goal, as it defaults to maximize, we did not include deep learning models, and we did not black-listed any algorithms (except for deep learning).
+In the configuration part we set parameters for AutoML training. In this project we included a reference to the compute target created for the training, we named the task to be performed (regression) as well as the dataset and the target (label) variable, we enable early stopping to save resources, we requested for AutoML to do automatic featurization, we established a validation size of 20% instead of number of cross-validations, and we requested to run explainability on the best model. We left out the metrics goal, as it defaults to maximize, we did not include deep learning models, and we did not black-listed any algorithms (except for deep learning).
 
 ### Results
 
