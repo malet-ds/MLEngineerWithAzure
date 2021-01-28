@@ -17,7 +17,6 @@ from inference_schema.schema_decorators import input_schema, output_schema
 from inference_schema.parameter_types.numpy_parameter_type import NumpyParameterType
 from inference_schema.parameter_types.pandas_parameter_type import PandasParameterType
 
-
 input_sample = pd.DataFrame({"MedInc": pd.Series([0.0], dtype="float64"), "HouseAge": pd.Series([0.0], dtype="float64"), "AveRooms": pd.Series([0.0], dtype="float64"), "AveBedrms": pd.Series([0.0], dtype="float64"), "Population": pd.Series([0.0], dtype="float64"), "AveOccup": pd.Series([0.0], dtype="float64"), "Latitude": pd.Series([0.0], dtype="float64"), "Longitude": pd.Series([0.0], dtype="float64")})
 output_sample = np.array([0])
 try:
@@ -26,7 +25,6 @@ try:
     logger = logging.getLogger('azureml.automl.core.scoring_script')
 except:
     pass
-
 
 def init():
     global model
@@ -43,7 +41,6 @@ def init():
     except Exception as e:
         logging_utilities.log_traceback(e, logger)
         raise
-
 
 @input_schema('data', PandasParameterType(input_sample))
 @output_schema(NumpyParameterType(output_sample))
