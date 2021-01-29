@@ -110,15 +110,49 @@ Finally I saved and registered the model with the workspace.
 
 ![Hyperdrive Saved and Registered](./img/hyperSavedAndRegistered.gif)
 
+## Test of the Model Selected
+
+Based on $r^2$, I decided to deploy the voting ensamble model trained with AutoML. Before deploying the model I tested it on a sample of the data that I preserved for this. On these data, unseen by the model during training and validation, the model scored $r^2 = 0.9258$, which is an eve n better result that the one achieved at training. Then I plotted predicted median house values against actual ones, also for test data. The plot is shown below:
+
+![Predicted Vs Actual Plot](./img/predVsActual.png)
+
+As we can see, the predicted values are reasonably close to a line with a 45° angle, which means the model is reasonably good. Next, we inspect the residuals in the graph below:
+
+![Graph of Residuals](./img/residuals.png)
+
+The residuals are not normally distributed and centered slightly off zero. This points to a sistematic error and implies that there might be some feature(s) missing from the model. Also, this could be the effect of a small sample.
+
+Upon inspection of features importance, I noticed that median income in block, latitude and longitude were the most relevant ones. Looking at the results of the exploratory analysis we can see that median income has a correlation coefficient of 0.69 with median house value. Finally, looking at features distributions we can see that both latitude and longitude have a marked bimodal distribution, which I looked in the map and correspond to Los Angeles City and the San Francisco Area.
+
+All of the above points to the conclusion that "neighborhood" might be the most relevant factor in predicting household values. The original dataset does not include many features on that, which leaves room for improvement. First, we could use latitude and longitude to generate spatial points and, using GIS programs, replace these two features by a cluster center representing a neighborhood and the difference of each block to the center. Also, we could enrich the dataset using other features at neighborhood level such as schools, colleges, libraries, transportation, commercial areas, entertainment availability, financial services, health services, turistic characteristics, crime data, and so forth.
+
 ## Model Deployment
 
-*TODO*: Give an overview of the deployed model and instructions on how to query the endpoint with a sample input.
+To deploy the model, we first need to download the scoring file and the conda specifications for the environment. I did that in cells #38 and #39 in the [notebook](automl.ipynb), and are saved int the automl folder. In the deployment configuration I enabled authentication - to protect the endpoint with an access key - and application insights - to monitor the endpoint on a graphical interface. Once the deployment succeded and showed as healthy, I checked in ML Studio to see its information. All of it is showed below.![Deployment Screenshots](./img/deployment.gif)~~~~
 
-add swagger
+Once deployed, we can test the service using a json payload and `service.run(input_payload)`This is shown in the next image.
 
-add app-insights
+![Testing the Service](./img/testService.png)
 
-show service.log()
+To test the endpoint, we need to collect its URI and authentication keys. We also need to prepare the payload in the appropriate format and the headers. All that is done in cells #42, #43, #47, and #48. Then we send the request to the endpoint and recieve the response and the resulting inferences, as shown below.
+
+![Test the Endpoint](./img/testEndpointNotebook.png)
+
+I use Swagger to make documenting the endpoint easier. For that I downloaded a `swagger.json` file using the link provided in ML Studio (shown above) or the method in cel #44, and saved into the swagger folder. Running ``swagger.sh`` and ``serve.py`` I gain access to the endpoint documentation where we can find examples of the response to GET method and a model of the payload expected by the POST method as well as the model. All of this is shown below.
+
+![Swagger](./img/swagger.gif)
+
+Also, if we click on 'Authorize' and type 'BEARER  (primary key here)'  and replace the zeros in the example for actual values, swagger will provide a curl instruction to test (the URI needs to be replaced).
+
+![Test Endpoint with Curl](./img/endpointCurl.png)
+
+Finally, we can monitor the endpoint from the notebook, using ``service.get_logs()``
+
+![Endpoint Logs](./img/endpointLogs.png)
+
+or using Application Insights
+
+![Application Insights](./img/appInsights.gif)
 
 ## Screen Recording
 
@@ -127,3 +161,5 @@ show service.log()
 - A working model
 - Demo of the deployed  model
 - Demo of a sample request sent to the endpoint and its response
+
+## Concluding Remarks
