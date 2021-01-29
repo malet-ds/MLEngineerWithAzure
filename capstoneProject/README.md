@@ -22,6 +22,8 @@ The dataset contains 20,640 observations on housing prices with 8 predictive atr
 * Longitude: house block longitude
 * MedHouseVal: median house value
 
+More information of the dataset can be found in this [notebook](sklearn_california_dataset.ipynb)
+
 ### Task
 
 As mentioned before, the project performs regressions on all the features to predict the value of the target variable, the median house value of the houses in the Census Block.
@@ -32,7 +34,7 @@ The dataset is accessed via the function ````sklearn.datasets.fetch_california_h
 
 Once downloaded the data has to be converted to pandas and preprocess. The dataset is clean, so the only preprocessing needed is splitting the sets in train and test. For the hyperdrive experiment no further work is necessary. For the AutoML experiment, the target variable needs to be added again to the features, and the dataset needs to be converted to a TabularDataset and register in the workspace. To do that, there is an experimental method in the ```TabularDatasetFactory``` class that, at the time of the project, was working: ```TabularDatasetFactory.register_pandas_dataframe(data, datastore,'data')```. Should this method fail in the future, the notebook contains alternative code to register the dataset.
 
-![loadRegisterDataset](./img/loadRegisterDataset.png)
+![Registered Dataset](./img/registerDataset.png)
 
 ## Automated ML
 
@@ -50,27 +52,51 @@ In the AutoML settings for the project, we established a maximum time of one hou
 
 - Configuration
 
-In the configuration part we set parameters for AutoML training. In this project we included a reference to the compute target created for the training, we named the task to be performed (regression) as well as the dataset and the target (label) variable, we enable early stopping to save resources, we requested for AutoML to do automatic featurization, we established a validation size of 20% instead of number of cross-validations, and we requested to run explainability on the best model. We left out the metrics goal, as it defaults to maximize, we did not include deep learning models, and we did not black-listed any algorithms (except for deep learning).
+In the configuration part we set parameters for AutoML training. In this project we included a reference to the compute target created for the training, we named the task to be performed (regression) as well as the dataset and the target (label) variable, we enable early stopping to save time and resources in case the training stops improving, we requested for AutoML to do automatic featurization, we established a validation size of 20% instead of number of cross-validations to match the hyperdrive experiment, and we requested to run explainability on the best model. We left out the metrics goal, as it defaults to maximize, we did not include deep learning models, and we did not black-listed any algorithms (except for deep learning).
 
 ### Results
 
-*TODO*: What are the results you got with your automated ML model? What were the parameters of the model? How could you have improved it?
+During the training process we can follow its advances using ```RunDetails``` widget
 
-*TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
+![RunDetails](./img/runDetails.gif)
 
-add model explanation
+Once the training ends, we can check the best model as well as all the metrics for all the child runs. The algorithms attempted by AutoML with their primary metrics are:
 
-![model](./img/modelSteps.png)
+![Models Attempted](./img/modelsAttempted.png)
+
+In cell #14 of the [notebook](automl.ipynb) we collected all metrics from all runs in the experiment and printed the first five. Also, in cell #15 we printed all metrics from the best model. The most relevant for our purpose is $r^2=0.85536$. This was achieved by the iteration number 38, with the ***voting ensamble*** algorithm with the following structure (see cell #19 for complete set of parameters):
+
+![Voting Ensamble](./img/votingEnsamble.png)
+
+To summarize, the ensamble uses three XGBoost Regressors, scaled with StandardScalerWrapper and different hyperparameters; and a LightGBM Regressor, scaled with MaxAbsScaler.
+
+As a final step, the best model was saved to a folder named automl as joblib and as pkl. Then it was registered to the workspace.
+
+![Registered AutoML](./img/registerAutoML.gif)
 
 ## Hyperparameter Tuning
 
-*TODO*: What kind of model did you choose for this experiment and why? Give an overview of the types of parameters and their ranges used for the hyperparameter search
+In order to decide which model to use for the hyperparameter tuning section, I fitted several models in the [notebook](sklearn_california_dataset.ipynb) mentioned before. From those models I concluded that the best ones were a vanila OLS and, slightly better, a Stochastic Gradient Descent Regressor. This last one was the chosen one for this project. 
+
+Among the hyperparameters that I did not change were the loss function, left as the default `squared_loss` that recover a standard OLS; the maximum number of iterations, which I set very high but with early stopping enabled to prevent a failure to converge; the learning rate schedule, left as the default `invscaling`; and the penalty, which I chose to be`elasticnet`. The parameters tuned were:
+
+* **alpha**: Multiplier of the regularization term. The higher the value, the stronger the regularization. I used a uniform distribution in the range (0.0001, 0.01) to cover both the documentation default value and the best result I got in my preparing work.
+* **l1_ratio**: The Elastic Net mixing parameter. ``l1_ratio=0`` corresponds to L2 penalty, `l1_ratio=1` to L1. I used a uniform distribution in the range (0, 1) to cover all posibilities.
+* **eta0**: The initial learning rate. I used a uniform distribution in the range (0.1, 0.9) based on my previous tests.
+* **power_t**: The exponent for inverse scaling learning rate. I used a unifrom distribution in the range (0.01, 0.99) also as the result of my previous tests.
+
+For more information, see [scikit learn documentation](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.htm).
 
 ### Results
+
 
 *TODO*: What are the results you got with your model? What were the parameters of the model? How could you have improved it?
 
 *TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
+
+
+![hyperdrive table](./img/hyperTable.png)
+
 
 ## Model Deployment
 
