@@ -54,6 +54,8 @@ In the AutoML settings for the project, we established a maximum time of one hou
 
 In the configuration part we set parameters for AutoML training. In this project we included a reference to the compute target created for the training, we named the task to be performed (regression) as well as the dataset and the target (label) variable, we enable early stopping to save time and resources in case the training stops improving, we requested for AutoML to do automatic featurization, we established a validation size of 20% instead of number of cross-validations to match the hyperdrive experiment, and we requested to run explainability on the best model. We left out the metrics goal, as it defaults to maximize, we did not include deep learning models, and we did not black-listed any algorithms (except for deep learning).
 
+For more information see [Azure documentation](https://docs.microsoft.com/en-us/python/api/azureml-train-automl-client/azureml.train.automl.automlconfig.automlconfig?view=azure-ml-py)
+
 ### Results
 
 During the training process we can follow its advances using ```RunDetails``` widget
@@ -64,7 +66,7 @@ Once the training ends, we can check the best model as well as all the metrics f
 
 ![Models Attempted](./img/modelsAttempted.png)
 
-In cell #14 of the [notebook](automl.ipynb) we collected all metrics from all runs in the experiment and printed the first five. Also, in cell #15 we printed all metrics from the best model. The most relevant for our purpose is $r^2=0.85536$. This was achieved by the iteration number 38, with the ***voting ensamble*** algorithm with the following structure (see cell #19 for complete set of parameters):
+In cell #14 of the [notebook](automl.ipynb) we collected all metrics from all runs in the experiment and printed the first five. Also, in cell #15 we printed all metrics from the best model. The most relevant for our purpose is $r^2=0.85536$. This was achieved by the iteration number 38, with the ***voting ensamble*** algorithm and the following structure (see cell #19 for complete set of parameters):
 
 ![Voting Ensamble](./img/votingEnsamble.png)
 
@@ -89,14 +91,24 @@ For more information, see [scikit learn documentation](https://scikit-learn.org/
 
 ### Results
 
+The best hyperdrive estimation was achieved in the iteration number 9, with $r^2=0.611687$ and hyperparameters:
 
-*TODO*: What are the results you got with your model? What were the parameters of the model? How could you have improved it?
+* Alpha = 0.0007986619990074236
+* L1 Ratio = 0.5235010292764468
+* Eta0 = 0.2867176541015094
+* Power_t = 0.669642173252586
 
-*TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
-
+The table below shows the runID, $r^2$ , and hyperparameter values for the top ten models in the experiment.
 
 ![hyperdrive table](./img/hyperTable.png)
 
+As with the AutoML experiment, we can follow the run using RunDetails or in Machine Learining Studio as shown below.
+
+![Run Details and ML Studio](./img/hyperRunDetailAndStudio.gif)
+
+Finally I saved and registered the model with the workspace.
+
+![Hyperdrive Saved and Registered](./img/hyperSavedAndRegistered.gif)
 
 ## Model Deployment
 
