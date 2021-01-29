@@ -156,10 +156,12 @@ or using Application Insights
 
 ## Screen Recording
 
-*TODO* Provide a link to a screen recording of the project in action. Remember that the screencast should demonstrate:
-
-- A working model
-- Demo of the deployed  model
-- Demo of a sample request sent to the endpoint and its response
+link to the video
 
 ## Concluding Remarks
+
+In this project I conducted two experiments to develop a model to estimate house prices in California. The first one was a linear regression using stochastic gradient descent and the hyperdrive to tune its hyperparameters. The second was an autoML experiment that produced a best model which was a voting ensamble with three XGBoost models and one LightGBM. Then, I decided that the voting ensamble was the best model and tested it with data unseen by the model. Finally, I deployed it as a webservice.
+
+In the testing section I mentioned possible improvements to the model. They can be summarized as: first, some feature engineering: converting latitude and longitude in 'neighborhoods' (clusters) with distance to the center. Second, enrich the dataset with neighborhood level data as mentioned above.
+
+In terms of the deployment, it could be interesting to deploy it locally to docker.
