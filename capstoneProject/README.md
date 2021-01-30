@@ -1,6 +1,8 @@
 # Housing Prices in California
 
-This project builds and deploys a model to estimate median house values for California districts. First we run two separate experiments: one is a Stochastic Gradient Descent Regression with its hyperparameters tuned via hyperdrive; the second is an AutoML experiment. In both cases the target variable is the median house value and the primary metrics is $r^2$. The best model is then deployed as a webservice.
+This project builds and deploys a model to estimate median house values for California districts. First we run two separate experiments: one is a Stochastic Gradient Descent Regression with its hyperparameters tuned via hyperdrive; the second is an AutoML experiment. In both cases the target variable is the median house value and the primary metrics is $r^2$. The best model is then deployed as a webservice. 
+
+![Diagram](./img/diagrama.png)All icons come from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>, and were made by Becris, Flat Icons, xnimrodx, dDara, mynamepong, Freepik, and Eucalyp in that order.
 
 ## Dataset
 
@@ -110,7 +112,7 @@ Finally I saved and registered the model with the workspace.
 
 ![Hyperdrive Saved and Registered](./img/hyperSavedAndRegistered.gif)
 
-## Test of the Model Selected
+## Model Selected
 
 Based on $r^2$, I decided to deploy the voting ensamble model trained with AutoML. Before deploying the model I tested it on a sample of the data that I preserved for this. On these data, unseen by the model during training and validation, the model scored $r^2 = 0.9258$, which is an eve n better result that the one achieved at training. Then I plotted predicted median house values against actual ones, also for test data. The plot is shown below:
 
@@ -156,7 +158,7 @@ or using Application Insights
 
 ## Screen Recording
 
-link to the video
+A vido showing the model and its deployment can be found [here](https://youtu.be/LcCZc8qXCyo).
 
 ## Concluding Remarks
 
