@@ -22,4 +22,4 @@ This project builds and deploys a model to estimate median house values for Cali
 
 ## Certificate
 
-[add an image of the certificate when I get it]
+![Certificate](./certificate.png)
