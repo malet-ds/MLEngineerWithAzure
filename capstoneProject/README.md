@@ -1,6 +1,6 @@
 # Housing Prices in California
 
-This project builds and deploys a model to estimate median house values for California districts. First we run two separate experiments: one is a Stochastic Gradient Descent Regression with its hyperparameters tuned via hyperdrive; the second is an AutoML experiment. In both cases the target variable is the median house value and the primary metrics is $r^2$. The best model is then deployed as a webservice. 
+This project builds and deploys a model to estimate median house values for California districts. First I run two separate experiments: one is a Stochastic Gradient Descent Regression with its hyperparameters tuned via hyperdrive; the second is an AutoML experiment. In both cases the target variable is the median house value and the primary metrics is $r^2$. The best model is then deployed as a webservice.
 
 ![Diagram](./img/diagrama.png)All icons come from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>, and were made by Becris, Flat Icons, xnimrodx, dDara, mynamepong, Freepik, and Eucalyp in that order.
 
@@ -28,7 +28,7 @@ More information of the dataset can be found in this [notebook](sklearn_californ
 
 ### Task
 
-As mentioned before, the project performs regressions on all the features to predict the value of the target variable, the median house value of the houses in the Census Block.
+As mentioned before, I perform regressions on all the features to predict the value of the target variable, the median house value of the houses in the Census Block.
 
 ### Access
 
@@ -50,11 +50,11 @@ At the time of the project there was a difference in SDK versions between the no
 
 - Settings
 
-In the AutoML settings for the project, we established a maximum time of one hour (to be able to finish the entire project within the four hours of the lab), we set the maximum number of concurrent iterations to five (because it has to be set, at most, at the value of the maximum nodes of the compute cluster created), and we set the primary metric to be $r^2$, to match the primary metric logged by the hyperdrive experiment.
+In the AutoML settings for the project, I established a maximum time of one hour (to be able to finish the entire project within the four hours of the lab), I set the maximum number of concurrent iterations to five (because it has to be set, at most, at the value of the maximum nodes of the compute cluster created), and I set the primary metric to be $r^2$, to match the primary metric logged by the hyperdrive experiment.
 
 - Configuration
 
-In the configuration part we set parameters for AutoML training. In this project we included a reference to the compute target created for the training, we named the task to be performed (regression) as well as the dataset and the target (label) variable, we enable early stopping to save time and resources in case the training stops improving, we requested for AutoML to do automatic featurization, we established a validation size of 20% instead of number of cross-validations to match the hyperdrive experiment, and we requested to run explainability on the best model. We left out the metrics goal, as it defaults to maximize, we did not include deep learning models, and we did not black-listed any algorithms (except for deep learning).
+In the configuration part I set parameters for AutoML training. I included a reference to the compute target created for training, I named the task to be performed (regression) as well as the dataset and the target (label) variable, I enable early stopping to save time and resources in case the training does not improve, I set it to do automatic featurization, I established a validation size of 20% instead of number of cross-validations to match the hyperdrive experiment, and I enabled explainability on the best model. I left out the metrics goal, as it defaults to maximize, I did not include deep learning models, and I did not black-listed any algorithms (except for deep learning).
 
 For more information see [Azure documentation](https://docs.microsoft.com/en-us/python/api/azureml-train-automl-client/azureml.train.automl.automlconfig.automlconfig?view=azure-ml-py)
 
@@ -80,7 +80,7 @@ As a final step, the best model was saved to a folder named automl as joblib and
 
 ## Hyperparameter Tuning
 
-In order to decide which model to use for the hyperparameter tuning section, I fitted several models in the [notebook](sklearn_california_dataset.ipynb) mentioned before. From those models I concluded that the best ones were a vanila OLS and, slightly better, a Stochastic Gradient Descent Regressor. This last one was the chosen one for this project. 
+In order to decide which model to use for the hyperparameter tuning section, I fitted several models in the [notebook](sklearn_california_dataset.ipynb) mentioned before. From those models I concluded that the best ones were a vanila OLS and, slightly better, a Stochastic Gradient Descent Regressor. This last one was the chosen one for this project.
 
 Among the hyperparameters that I did not change were the loss function, left as the default `squared_loss` that recover a standard OLS; the maximum number of iterations, which I set very high but with early stopping enabled to prevent a failure to converge; the learning rate schedule, left as the default `invscaling`; and the penalty, which I chose to be`elasticnet`. The parameters tuned were:
 
@@ -90,6 +90,10 @@ Among the hyperparameters that I did not change were the loss function, left as 
 * **power_t**: The exponent for inverse scaling learning rate. I used a unifrom distribution in the range (0.01, 0.99) also as the result of my previous tests.
 
 For more information, see [scikit learn documentation](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.htm).
+
+For the early termination policy, I chose it to evaluate every iteration after the fifth one, and a slack factor of 0.2, which is the percentage distance allowed with respect to the best performing run, any child run falling outside that range will be terminated. This is used to save resources from being wasted on runs that are not performing well.
+
+I chose a maximum of 50 runs to be able to complete the entire project in the time allowed in the lab. And I used four maximum concurrent runs because they need to be less than the number of nodes in the compute cluster.
 
 ### Results
 
@@ -112,6 +116,8 @@ Finally I saved and registered the model with the workspace.
 
 ![Hyperdrive Saved and Registered](./img/hyperSavedAndRegistered.gif)
 
+This is not a very good model. The best $r^2$ reached was around 0.61, while the correlation between median house value and median income of the block is 0.69
+
 ## Model Selected
 
 Based on $r^2$, I decided to deploy the voting ensamble model trained with AutoML. Before deploying the model I tested it on a sample of the data that I preserved for this. On these data, unseen by the model during training and validation, the model scored $r^2 = 0.9258$, which is an eve n better result that the one achieved at training. Then I plotted predicted median house values against actual ones, also for test data. The plot is shown below:
@@ -130,17 +136,17 @@ All of the above points to the conclusion that "neighborhood" might be the most 
 
 ## Model Deployment
 
-To deploy the model, we first need to download the scoring file and the conda specifications for the environment. I did that in cells #38 and #39 in the [notebook](automl.ipynb), and are saved int the automl folder. In the deployment configuration I enabled authentication - to protect the endpoint with an access key - and application insights - to monitor the endpoint on a graphical interface. Once the deployment succeded and showed as healthy, I checked in ML Studio to see its information. All of it is showed below.![Deployment Screenshots](./img/deployment.gif)~~~~
+To deploy the model, I first downloaded the scoring file and the conda specifications for the environment. I did that in cells #38 and #39 in the [notebook](automl.ipynb), and are saved int the automl folder. In the deployment configuration I enabled authentication - to protect the endpoint with an access key - and application insights - to monitor the endpoint on a graphical interface. Once the deployment succeded and showed as healthy, I checked in ML Studio to see its information. All of it is showed below.![Deployment Screenshots](./img/deployment.gif)~~~~
 
 Once deployed, we can test the service using a json payload and `service.run(input_payload)`This is shown in the next image.
 
 ![Testing the Service](./img/testService.png)
 
-To test the endpoint, we need to collect its URI and authentication keys. We also need to prepare the payload in the appropriate format and the headers. All that is done in cells #42, #43, #47, and #48. Then we send the request to the endpoint and recieve the response and the resulting inferences, as shown below.
+To test the endpoint, I need to collect the URI and authentication keys. I also need to prepare the payload in the appropriate format and the headers. All that is done in cells #42, #43, #47, and #48. Then I sent the request to the endpoint and recieved the response and the resulting inferences, as shown below.
 
 ![Test the Endpoint](./img/testEndpointNotebook.png)
 
-I use Swagger to make documenting the endpoint easier. For that I downloaded a `swagger.json` file using the link provided in ML Studio (shown above) or the method in cel #44, and saved into the swagger folder. Running ``swagger.sh`` and ``serve.py`` I gain access to the endpoint documentation where we can find examples of the response to GET method and a model of the payload expected by the POST method as well as the model. All of this is shown below.
+I used Swagger to make documenting the endpoint easier. For that I downloaded a `swagger.json` file using the link provided in ML Studio (shown above) or the method in cel #44, and saved into the swagger folder. Running ``swagger.sh`` and ``serve.py`` I gained access to the endpoint documentation where we can find examples of the response to GET method and a model of the payload expected by the POST method as well as the model. All of this is shown below.
 
 ![Swagger](./img/swagger.gif)
 
