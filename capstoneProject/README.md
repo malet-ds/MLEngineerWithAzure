@@ -118,11 +118,21 @@ As with the AutoML experiment, we can follow the run using RunDetails or in Mach
 
 ![Run Details and ML Studio](./img/runWidgetHyper.png)
 
+![RunDetails](./img/runWidgetHyper2.png)
+
+![HyperDrive Finished](./img/hyperFinished.png)
+
+We can follow the process also in ML Studio below
+
+![Hyperdrive in ML Studio](./img/hyperRunInPortal2.png)
+
 Finally I saved and registered the model with the workspace.
 
-![Hyperdrive Saved and Registered](./img/hyperSavedAndRegistered.gif)
+![Hyperdrive Saved and Registered](./img/bestHyperSaved.png)
 
-This is not a very good model. The best $r^2$ reached was around 0.61, while the correlation between median house value and median income of the block is 0.69
+![HyperDrive Registered](./img/bestHyperRegistered.png)
+
+This is not a very good model. The best $r^2$ reached was around 0.61, while the correlation between median house value and median income of the block is 0.69. Therefore, I will not deploy this model.
 
 ## Model Selected
 
@@ -136,13 +146,28 @@ As we can see, the predicted values are reasonably close to a line with a 45° a
 
 The residuals are not normally distributed and centered slightly off zero. This points to a sistematic error and implies that there might be some feature(s) missing from the model. Also, this could be the effect of a small sample.
 
+## Future improvements to the model
+
 Upon inspection of features importance, I noticed that median income in block, latitude and longitude were the most relevant ones. Looking at the results of the exploratory analysis we can see that median income has a correlation coefficient of 0.69 with median house value. Finally, looking at features distributions we can see that both latitude and longitude have a marked bimodal distribution, which I looked in the map and correspond to Los Angeles City and the San Francisco Area.
 
-All of the above points to the conclusion that "neighborhood" might be the most relevant factor in predicting household values. The original dataset does not include many features on that, which leaves room for improvement. First, we could use latitude and longitude to generate spatial points and, using GIS programs, replace these two features by a cluster center representing a neighborhood and the difference of each block to the center. Also, we could enrich the dataset using other features at neighborhood level such as schools, colleges, libraries, transportation, commercial areas, entertainment availability, financial services, health services, turistic characteristics, crime data, and so forth.
+All of the above points to the conclusion that "neighborhood" might be the most relevant factor in predicting household values. The original dataset does not include many features on that, which leaves room for improvement.
+
+1. We could use latitude and longitude to generate spatial points and, using GIS programs, replace these two features by a cluster center representing a neighborhood and the difference of each block to the center.
+2. We could enrich the dataset using other features at neighborhood level such as schools, colleges, libraries, transportation, commercial areas, entertainment availability, financial services, health services, turistic characteristics, crime data, and so forth.
 
 ## Model Deployment
 
-To deploy the model, I first downloaded the scoring file and the conda specifications for the environment. I did that in cells #38 and #39 in the [notebook](automl.ipynb), and are saved int the automl folder. In the deployment configuration I enabled authentication - to protect the endpoint with an access key - and application insights - to monitor the endpoint on a graphical interface. Once the deployment succeded and showed as healthy, I checked in ML Studio to see its information. All of it is showed below.![Deployment Screenshots](./img/deployment.gif)~~~~
+To deploy the model, I first downloaded the scoring file and the conda specifications for the environment. I did that in cells #38 and #39 in the [notebook](automl.ipynb), and are saved int the automl folder. In the deployment configuration I enabled authentication - to protect the endpoint with an access key - and application insights - to monitor the endpoint on a graphical interface. Once the deployment succeded and showed as healthy, I checked in ML Studio to see its information. All of it is showed below.
+
+![Deployment Screenshots](./img/deploymentHealthy.png)
+
+![Endpoint 1](./img/endpoint1.png)
+
+![Endpoint 2](./img/endpoint2.png)
+
+![Endpoint 3](./img/endpoint3.png)
+
+![Endpoint 4](./img/endpoint4.png)
 
 Once deployed, we can test the service using a json payload and `service.run(input_payload)`This is shown in the next image.
 
@@ -154,7 +179,13 @@ To test the endpoint, I need to collect the URI and authentication keys. I also 
 
 I used Swagger to make documenting the endpoint easier. For that I downloaded a `swagger.json` file using the link provided in ML Studio (shown above) or the method in cel #44, and saved into the swagger folder. Running ``swagger.sh`` and ``serve.py`` I gained access to the endpoint documentation where we can find examples of the response to GET method and a model of the payload expected by the POST method as well as the model. All of this is shown below.
 
-![Swagger](./img/swagger.gif)
+![Swagger](./img/swagger1.png)
+
+![Swagger](./img/swagger3.png)
+
+![Swagger](./img/swagger5.png)
+
+![Swagger](./img/swagger2.png)
 
 Also, if we click on 'Authorize' and type 'BEARER  (primary key here)'  and replace the zeros in the example for actual values, swagger will provide a curl instruction to test (the URI needs to be replaced).
 
@@ -166,16 +197,14 @@ Finally, we can monitor the endpoint from the notebook, using ``service.get_logs
 
 or using Application Insights
 
-![Application Insights](./img/appInsights.gif)
+![Application Insights](./img/appInsights1.png)
+
+![Application Insights](./img/appInsights2.png)
 
 ## Screen Recording
 
 A vido showing the model and its deployment can be found [here](https://youtu.be/LcCZc8qXCyo).
 
-## Concluding Remarks
+## Summary
 
-In this project I conducted two experiments to develop a model to estimate house prices in California. The first one was a linear regression using stochastic gradient descent and the hyperdrive to tune its hyperparameters. The second was an autoML experiment that produced a best model which was a voting ensamble with three XGBoost models and one LightGBM. Then, I decided that the voting ensamble was the best model and tested it with data unseen by the model. Finally, I deployed it as a webservice.
-
-In the testing section I mentioned possible improvements to the model. They can be summarized as: first, some feature engineering: converting latitude and longitude in 'neighborhoods' (clusters) with distance to the center. Second, enrich the dataset with neighborhood level data as mentioned above.
-
-In terms of the deployment, it could be interesting to deploy it locally to docker.
+In this project I conducted two experiments to develop a model to estimate house prices in California. The first one was a linear regression using stochastic gradient descent and the hyperdrive to tune its hyperparameters. The second was an autoML experiment that produced a best model which was a voting ensamble with three XGBoost models and one LightGBM. Then, I decided that the voting ensamble was the best model and tested it with data unseen by the model. Next, I suggested some improvements to the model such as some feature engineering and dataset enrichment. Finally, I deployed the model as a webservice.
