@@ -62,7 +62,11 @@ For more information see [Azure documentation](https://docs.microsoft.com/en-us/
 
 During the training process we can follow its advances using ```RunDetails``` widget
 
-![RunDetails](./img/runDetails.gif)
+![RunDetails](./img/runDetailsAuto1.png)
+
+![RunDetails](./img/runDetailsAuto2.png)
+
+![RunDetails](./img/runDetailsAuto3.png)
 
 Once the training ends, we can check the best model as well as all the metrics for all the child runs. The algorithms attempted by AutoML with their primary metrics are:
 
@@ -76,7 +80,9 @@ To summarize, the ensamble uses three XGBoost Regressors, scaled with StandardSc
 
 As a final step, the best model was saved to a folder named automl as joblib and as pkl. Then it was registered to the workspace.
 
-![Registered AutoML](./img/registerAutoML.gif)
+![Register AutoML](./img/saveRegisterBestAutoml.png)
+
+![Registered AutoML](./img/automlModelRegistered.png)![Register AutoML](./img/automlModelRegistered2.png)
 
 ## Hyperparameter Tuning
 
@@ -110,7 +116,7 @@ The table below shows the runID, $r^2$ , and hyperparameter values for the top t
 
 As with the AutoML experiment, we can follow the run using RunDetails or in Machine Learining Studio as shown below.
 
-![Run Details and ML Studio](./img/hyperRunDetailAndStudio.gif)
+![Run Details and ML Studio](./img/runWidgetHyper.png)
 
 Finally I saved and registered the model with the workspace.
 
